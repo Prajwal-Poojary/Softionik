@@ -103,14 +103,17 @@ const SideDrawer = () => {
                             <span className="text-sm font-medium ml-1">V</span>
                         </button>
                         {/* Dropdown */}
-                        <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg hidden group-hover:block z-10">
-                            <button className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100">My Profile</button>
-                            <button
-                                onClick={logoutHandler}
-                                className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100 text-red-500"
-                            >
-                                Logout
-                            </button>
+                        {/* Dropdown */}
+                        <div className="absolute right-0 pt-2 w-48 hidden group-hover:block z-10">
+                            <div className="bg-white border border-gray-200 rounded-md shadow-lg">
+                                <button className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100">My Profile</button>
+                                <button
+                                    onClick={logoutHandler}
+                                    className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100 text-red-500"
+                                >
+                                    Logout
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
