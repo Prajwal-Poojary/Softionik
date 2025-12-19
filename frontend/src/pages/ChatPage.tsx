@@ -1,21 +1,37 @@
 import { ChatState } from "../Context/ChatProvider";
-import SideDrawer from "../components/miscellaneous/SideDrawer";
-import MyChats from "../components/MyChats";
-import ChatBox from "../components/ChatBox";
+import Navbar from "../components/Navbar";
+import ChatSidebar from "../components/ChatSidebar";
+import ChatArea from "../components/ChatArea";
+import InfoPanel from "../components/InfoPanel";
 import { useState } from "react";
+import { AnimatePresence } from "framer-motion";
 
 const ChatPage = () => {
-    const { user } = ChatState();
+    const { user, selectedChat } = ChatState();
     const [fetchAgain, setFetchAgain] = useState(false);
+    const [showInfo, setShowInfo] = useState(false);
 
     return (
-        <div className="w-full h-screen flex flex-col overflow-hidden">
-            {user && <SideDrawer />}
-            <div className="flex w-full h-[91.5vh] justify-between p-2.5 space-x-2.5">
-                {user && <MyChats fetchAgain={fetchAgain} />}
+        <div className="w-full h-screen flex flex-col overflow-hidden bg-white">
+            {user && <Navbar />}
+            <div className="flex flex-1 w-full overflow-hidden relative">
+                {user && <ChatSidebar fetchAgain={fetchAgain} />}
+
                 {user && (
-                    <ChatBox fetchAgain={fetchAgain} setFetchAgain={setFetchAgain} />
+                    <div className={`flex-1 flex flex-col h-full bg-[#efeae2] transition-all duration-300 ${!selectedChat ? 'hidden md:flex' : 'flex absolute md:relative inset-0 z-20 md:z-0'}`}>
+                        <ChatArea
+                            fetchAgain={fetchAgain}
+                            setFetchAgain={setFetchAgain}
+                            setShowInfo={setShowInfo}
+                        />
+                    </div>
                 )}
+
+                <AnimatePresence>
+                    {showInfo && selectedChat && (
+                        <InfoPanel onClose={() => setShowInfo(false)} />
+                    )}
+                </AnimatePresence>
             </div>
         </div>
     );

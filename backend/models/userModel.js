@@ -16,6 +16,10 @@ const userSchema = mongoose.Schema(
             required: true,
             default: false,
         },
+        about: {
+            type: String,
+            default: "Hey there! I am using Softionik Chat.",
+        },
     },
     { timestamps: true }
 );

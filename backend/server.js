@@ -9,6 +9,12 @@ import { notFound, errorHandler } from './middleware/errorMiddleware.js';
 import userRoutes from './routes/userRoutes.js';
 import chatRoutes from './routes/chatRoutes.js';
 import messageRoutes from './routes/messageRoutes.js';
+import storyRoutes from './routes/storyRoutes.js';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 dotenv.config();
 connectDB();
@@ -39,6 +45,8 @@ app.get('/', (req, res) => {
 app.use('/api/user', userRoutes);
 app.use('/api/chat', chatRoutes);
 app.use('/api/message', messageRoutes);
+app.use('/api/story', storyRoutes);
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Error Handling
 app.use(notFound);
@@ -72,6 +80,14 @@ io.on("connection", (socket) => {
 
             socket.in(user._id).emit("message received", newMessageRecieved);
         });
+    });
+
+    socket.on("callUser", (data) => {
+        io.to(data.userToCall).emit("callUser", { signal: data.signalData, from: data.from, name: data.name });
+    });
+
+    socket.on("answerCall", (data) => {
+        io.to(data.to).emit("callAccepted", data.signal);
     });
 
     socket.off("setup", () => {

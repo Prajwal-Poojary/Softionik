@@ -6,12 +6,15 @@ import axios from "axios";
 // Icons can be used from libraries or emojis for now
 // import { BellIcon, ChevronDownIcon } from "@heroicons/react/24/outline"; 
 
+import ProfileModal from "./ProfileModal";
+
 const SideDrawer = () => {
     const [search, setSearch] = useState("");
     const [searchResult, setSearchResult] = useState([]);
     const [loading, setLoading] = useState(false);
     const [loadingChat, setLoadingChat] = useState(false);
     const [isSearchOpen, setIsSearchOpen] = useState(false);
+    const [isProfileOpen, setIsProfileOpen] = useState(false);
 
     const {
         user,
@@ -106,7 +109,12 @@ const SideDrawer = () => {
                         {/* Dropdown */}
                         <div className="absolute right-0 pt-2 w-48 hidden group-hover:block z-10">
                             <div className="bg-white border border-gray-200 rounded-md shadow-lg">
-                                <button className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100">My Profile</button>
+                                <button
+                                    onClick={() => setIsProfileOpen(true)}
+                                    className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
+                                >
+                                    My Profile
+                                </button>
                                 <button
                                     onClick={logoutHandler}
                                     className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100 text-red-500"
@@ -133,6 +141,7 @@ const SideDrawer = () => {
                             </svg>
                         </button>
                     </div>
+                    {/* ... (Search content omitted for brevity) ... */}
                     <div className="flex pb-2">
                         <input
                             className="border p-2 rounded w-full mr-2"
@@ -164,6 +173,7 @@ const SideDrawer = () => {
                     {loadingChat && <div className="mt-4 text-center">Opening Chat...</div>}
                 </div>
             )}
+            <ProfileModal isOpen={isProfileOpen} onClose={() => setIsProfileOpen(false)} />
         </>
     );
 };
