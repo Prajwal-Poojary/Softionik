@@ -35,12 +35,12 @@ const MyChats = ({ fetchAgain }: { fetchAgain: boolean }) => {
     return (
         <div
             className={`${selectedChat ? "hidden" : "flex"
-                } md:flex flex-col items-center p-3 bg-white w-full md:w-1/3 rounded-lg border border-gray-200`}
+                } md:flex flex-col items-center p-3 bg-white dark:bg-gray-900 w-full md:w-1/3 rounded-lg border border-gray-200 dark:border-gray-800 transition-colors duration-200`}
         >
-            <div className="pb-3 px-3 text-2xl font-sans flex w-full justify-between items-center">
+            <div className="pb-3 px-3 text-2xl font-sans flex w-full justify-between items-center text-gray-800 dark:text-gray-200">
                 My Chats
                 <button
-                    className="flex text-sm bg-gray-100 p-2 rounded-md hover:bg-gray-200"
+                    className="flex text-sm bg-gray-100 dark:bg-gray-800 p-2 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 transition-colors"
                     onClick={() => {
                         // Group Chat Modal Logic Placeholder
                         toast.info("Create Group Chat Feature Here");
@@ -49,13 +49,13 @@ const MyChats = ({ fetchAgain }: { fetchAgain: boolean }) => {
                     New Group +
                 </button>
             </div>
-            <div className="flex flex-col p-3 bg-gray-50 w-full h-full rounded-lg overflow-y-hidden">
+            <div className="flex flex-col p-3 bg-gray-50 dark:bg-gray-950 w-full h-full rounded-lg overflow-y-hidden transition-colors duration-200">
                 {chats ? (
                     <div className="overflow-y-scroll scrollbar-hide">
                         {chats.map((chat: any) => (
                             <div
                                 onClick={() => setSelectedChat(chat)}
-                                className={`cursor-pointer px-3 py-2 rounded-lg mb-2 transition-colors ${selectedChat === chat ? "bg-blue-500 text-white" : "bg-gray-200 text-black hover:bg-gray-300"
+                                className={`cursor-pointer px-3 py-2 rounded-lg mb-2 transition-colors ${selectedChat === chat ? "bg-indigo-600 text-white" : "bg-gray-200 dark:bg-gray-800 text-black dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-700"
                                     }`}
                                 key={chat._id}
                             >

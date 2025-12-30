@@ -51,11 +51,11 @@ const ChatSidebar = ({ fetchAgain }: { fetchAgain: boolean }) => {
 
 
     return (
-        <div className={`flex flex-col h-full bg-white border-r border-gray-200 w-full md:w-80 lg:w-96 flex-shrink-0 transition-all duration-300 ${selectedChat ? 'hidden md:flex' : 'flex'}`}>
+        <div className={`flex flex-col h-full bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 w-full md:w-80 lg:w-96 flex-shrink-0 transition-all duration-300 ${selectedChat ? 'hidden md:flex' : 'flex'}`}>
             {/* Header */}
             {/* Header */}
-            <div className="px-4 py-3 bg-white/80 backdrop-blur-sm border-b border-gray-100 flex justify-between items-center sticky top-0 z-10">
-                <h1 className="font-bold text-xl text-gray-800 tracking-tight">Chats</h1>
+            <div className="px-4 py-3 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border-b border-gray-100 dark:border-gray-800 flex justify-between items-center sticky top-0 z-10 transition-colors duration-200">
+                <h1 className="font-bold text-xl text-gray-800 dark:text-gray-100 tracking-tight">Chats</h1>
 
                 <button
                     onClick={() => toast.info("Create Group functionality here")}
@@ -73,7 +73,7 @@ const ChatSidebar = ({ fetchAgain }: { fetchAgain: boolean }) => {
                     <input
                         type="text"
                         placeholder="Search chats..."
-                        className="w-full pl-10 pr-4 py-2 bg-gray-100 border-none rounded-full focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all text-sm"
+                        className="w-full pl-10 pr-4 py-2 bg-gray-100 dark:bg-gray-800 border-none rounded-full focus:ring-2 focus:ring-indigo-500 focus:bg-white dark:focus:bg-gray-700 transition-all text-sm dark:text-gray-200 dark:placeholder-gray-500"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
@@ -90,8 +90,8 @@ const ChatSidebar = ({ fetchAgain }: { fetchAgain: boolean }) => {
                             onClick={() => setSelectedChat(chat)}
                             key={chat?._id}
                             className={`flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-all border border-transparent ${selectedChat === chat
-                                ? "bg-indigo-50 border-indigo-100 shadow-sm"
-                                : "hover:bg-gray-50 hover:border-gray-100"
+                                ? "bg-indigo-50 dark:bg-gray-800 border-indigo-100 dark:border-gray-700 shadow-sm"
+                                : "hover:bg-gray-50 dark:hover:bg-gray-800 hover:border-gray-100 dark:hover:border-gray-700"
                                 }`}
                         >
                             {/* Avatar */}
@@ -106,7 +106,7 @@ const ChatSidebar = ({ fetchAgain }: { fetchAgain: boolean }) => {
                             {/* Info */}
                             <div className="flex-1 min-w-0">
                                 <div className="flex justify-between items-baseline mb-1">
-                                    <h3 className={`text-sm font-semibold truncate ${selectedChat === chat ? 'text-indigo-900' : 'text-gray-900'}`}>
+                                    <h3 className={`text-sm font-semibold truncate ${selectedChat === chat ? 'text-indigo-900 dark:text-indigo-400' : 'text-gray-900 dark:text-gray-100'}`}>
                                         {!chat.isGroupChat ? getSender(loggedUser, chat.users) : chat.chatName}
                                     </h3>
                                     {chat.latestMessage && (

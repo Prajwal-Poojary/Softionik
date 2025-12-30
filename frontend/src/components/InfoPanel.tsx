@@ -19,17 +19,17 @@ const InfoPanel = ({ onClose }: { onClose: () => void }) => {
             initial={{ width: 0, opacity: 0 }}
             animate={{ width: 320, opacity: 1 }}
             exit={{ width: 0, opacity: 0 }}
-            className="h-full bg-white border-l border-gray-200 shadow-xl overflow-hidden flex flex-col z-20 shrink-0"
+            className="h-full bg-white dark:bg-gray-900 border-l border-gray-200 dark:border-gray-800 shadow-xl overflow-hidden flex flex-col z-20 shrink-0 transition-colors duration-200"
         >
             {/* Header */}
             <div className="h-16 flex items-center gap-3 px-4 border-b border-gray-100 bg-gray-50/50">
                 <button
                     onClick={onClose}
-                    className="p-2 hover:bg-gray-200 rounded-full text-gray-500 transition-colors"
+                    className="p-2 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-full text-gray-500 dark:text-gray-400 transition-colors"
                 >
                     <X size={20} />
                 </button>
-                <h2 className="font-semibold text-gray-700">
+                <h2 className="font-semibold text-gray-700 dark:text-gray-200">
                     {selectedChat.isGroupChat ? "Group Info" : "Contact Info"}
                 </h2>
             </div>
@@ -37,7 +37,7 @@ const InfoPanel = ({ onClose }: { onClose: () => void }) => {
             {/* Content */}
             <div className="flex-1 overflow-y-auto custom-scrollbar">
                 {/* Profile Section */}
-                <div className="flex flex-col items-center p-6 border-b border-gray-100 bg-white">
+                <div className="flex flex-col items-center p-6 border-b border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900">
                     <div className="w-24 h-24 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 font-bold text-3xl mb-4 border-4 border-white shadow-lg relative">
                         {selectedChat.isGroupChat ? (
                             "G"
@@ -50,10 +50,10 @@ const InfoPanel = ({ onClose }: { onClose: () => void }) => {
                         )}
                         <span className="absolute bottom-1 right-1 w-5 h-5 bg-green-500 border-2 border-white rounded-full"></span>
                     </div>
-                    <h3 className="text-xl font-bold text-gray-800 text-center">
+                    <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100 text-center">
                         {selectedChat.isGroupChat ? selectedChat.chatName : sender?.name}
                     </h3>
-                    <p className="text-sm text-gray-500 mt-1">
+                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                         {selectedChat.isGroupChat
                             ? `${selectedChat.users.length} members`
                             : sender?.email}
@@ -62,30 +62,30 @@ const InfoPanel = ({ onClose }: { onClose: () => void }) => {
                     {/* Actions */}
                     <div className="flex gap-4 mt-6 w-full justify-center">
                         <button className="flex flex-col items-center gap-1 min-w-[60px]">
-                            <div className="w-10 h-10 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center hover:bg-indigo-100 transition-colors shadow-sm">
+                            <div className="w-10 h-10 rounded-full bg-indigo-50 dark:bg-gray-800 text-indigo-600 dark:text-indigo-400 flex items-center justify-center hover:bg-indigo-100 dark:hover:bg-gray-700 transition-colors shadow-sm">
                                 <Phone size={20} />
                             </div>
-                            <span className="text-xs text-indigo-600 font-medium">Audio</span>
+                            <span className="text-xs text-indigo-600 dark:text-indigo-400 font-medium">Audio</span>
                         </button>
                         <button className="flex flex-col items-center gap-1 min-w-[60px]">
-                            <div className="w-10 h-10 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center hover:bg-indigo-100 transition-colors shadow-sm">
+                            <div className="w-10 h-10 rounded-full bg-indigo-50 dark:bg-gray-800 text-indigo-600 dark:text-indigo-400 flex items-center justify-center hover:bg-indigo-100 dark:hover:bg-gray-700 transition-colors shadow-sm">
                                 <Video size={20} />
                             </div>
-                            <span className="text-xs text-indigo-600 font-medium">Video</span>
+                            <span className="text-xs text-indigo-600 dark:text-indigo-400 font-medium">Video</span>
                         </button>
                         <button className="flex flex-col items-center gap-1 min-w-[60px]">
-                            <div className="w-10 h-10 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center hover:bg-indigo-100 transition-colors shadow-sm">
+                            <div className="w-10 h-10 rounded-full bg-indigo-50 dark:bg-gray-800 text-indigo-600 dark:text-indigo-400 flex items-center justify-center hover:bg-indigo-100 dark:hover:bg-gray-700 transition-colors shadow-sm">
                                 <User size={20} />
                             </div>
-                            <span className="text-xs text-indigo-600 font-medium">Profile</span>
+                            <span className="text-xs text-indigo-600 dark:text-indigo-400 font-medium">Profile</span>
                         </button>
                     </div>
                 </div>
 
                 {/* About / Description */}
-                <div className="p-4 border-b border-gray-100">
-                    <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">About</h4>
-                    <p className="text-sm text-gray-700 leading-relaxed">
+                <div className="p-4 border-b border-gray-100 dark:border-gray-800">
+                    <h4 className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2">About</h4>
+                    <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
                         {selectedChat.isGroupChat
                             ? "This is a group description placeholder. Add fun details here!"
                             : (sender?.about || "Hey there! I am using Softionik Chat.")}
@@ -97,21 +97,21 @@ const InfoPanel = ({ onClose }: { onClose: () => void }) => {
                 </div>
 
                 {/* Media, Links, Docs */}
-                <div className="p-2 border-b border-gray-100">
-                    <button className="w-full flex items-center justify-between p-3 hover:bg-gray-50 rounded-lg transition-colors group">
+                <div className="p-2 border-b border-gray-100 dark:border-gray-800">
+                    <button className="w-full flex items-center justify-between p-3 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg transition-colors group">
                         <div className="flex items-center gap-3">
-                            <div className="text-gray-400 group-hover:text-indigo-500 transition-colors"><Image size={18} /></div>
-                            <span className="text-sm font-medium text-gray-700">Media, Links and Docs</span>
+                            <div className="text-gray-400 group-hover:text-indigo-500 dark:group-hover:text-indigo-400 transition-colors"><Image size={18} /></div>
+                            <span className="text-sm font-medium text-gray-700 dark:text-gray-200">Media, Links and Docs</span>
                         </div>
                         <div className="flex items-center gap-2">
                             <span className="text-xs text-gray-400">12</span>
                             <ChevronRight size={16} className="text-gray-300" />
                         </div>
                     </button>
-                    <button className="w-full flex items-center justify-between p-3 hover:bg-gray-50 rounded-lg transition-colors group">
+                    <button className="w-full flex items-center justify-between p-3 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg transition-colors group">
                         <div className="flex items-center gap-3">
                             <div className="text-gray-400 group-hover:text-amber-500 transition-colors"><Verified size={18} /></div>
-                            <span className="text-sm font-medium text-gray-700">Starred Messages</span>
+                            <span className="text-sm font-medium text-gray-700 dark:text-gray-200">Starred Messages</span>
                         </div>
                         <ChevronRight size={16} className="text-gray-300" />
                     </button>
@@ -119,8 +119,8 @@ const InfoPanel = ({ onClose }: { onClose: () => void }) => {
 
                 {/* Group Members */}
                 {selectedChat.isGroupChat && (
-                    <div className="p-4 bg-gray-50/30">
-                        <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">
+                    <div className="p-4 bg-gray-50/30 dark:bg-gray-800/30">
+                        <h4 className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-3">
                             {selectedChat.users.length} Members
                         </h4>
                         <div className="space-y-3">
@@ -128,8 +128,8 @@ const InfoPanel = ({ onClose }: { onClose: () => void }) => {
                                 <div key={u._id} className="flex items-center gap-3">
                                     <img src={u.pic} className="w-8 h-8 rounded-full" alt={u.name} />
                                     <div className="flex-1 min-w-0">
-                                        <p className="text-sm font-medium text-gray-800 truncate">{u.name}</p>
-                                        <p className="text-xs text-gray-500 truncate">{u.email}</p>
+                                        <p className="text-sm font-medium text-gray-800 dark:text-gray-200 truncate">{u.name}</p>
+                                        <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{u.email}</p>
                                     </div>
                                     {selectedChat.groupAdmin?._id === u._id && (
                                         <span className="text-xs bg-indigo-100 text-indigo-600 px-2 py-0.5 rounded-full font-medium">Admin</span>
@@ -142,7 +142,7 @@ const InfoPanel = ({ onClose }: { onClose: () => void }) => {
 
                 {/* Danger Zone */}
                 <div className="p-4 mt-2 mb-8">
-                    <button className="w-full py-3 bg-red-50 text-red-600 rounded-xl text-sm font-semibold hover:bg-red-100 transition-colors flex items-center justify-center gap-2">
+                    <button className="w-full py-3 bg-red-50 dark:bg-red-900/10 text-red-600 dark:text-red-400 rounded-xl text-sm font-semibold hover:bg-red-100 dark:hover:bg-red-900/20 transition-colors flex items-center justify-center gap-2">
                         <LogOutIcon size={16} />
                         {selectedChat.isGroupChat ? "Exit Group" : "Block User"}
                     </button>

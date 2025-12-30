@@ -158,27 +158,27 @@ const ChatArea = ({ fetchAgain, setFetchAgain, setShowInfo }: { fetchAgain: bool
 
     if (!selectedChat) {
         return (
-            <div className="flex flex-col items-center justify-center h-full w-full bg-gray-50 text-gray-400">
-                <div className="w-20 h-20 bg-gray-200 rounded-full flex items-center justify-center mb-4">
-                    <Send size={40} className="text-gray-400 ml-2" />
+            <div className="flex flex-col items-center justify-center h-full w-full bg-gray-50 dark:bg-gray-900 text-gray-400 dark:text-gray-500 transition-colors duration-200">
+                <div className="w-20 h-20 bg-gray-200 dark:bg-gray-800 rounded-full flex items-center justify-center mb-4">
+                    <Send size={40} className="text-gray-400 dark:text-gray-600 ml-2" />
                 </div>
-                <h2 className="text-2xl font-bold text-gray-600">Welcome to Softionik Chat</h2>
-                <p className="mt-2 text-sm text-gray-500">Select a conversation from the sidebar to start chatting.</p>
+                <h2 className="text-2xl font-bold text-gray-600 dark:text-gray-300">Welcome to Softionik Chat</h2>
+                <p className="mt-2 text-sm text-gray-500 dark:text-gray-500">Select a conversation from the sidebar to start chatting.</p>
             </div>
         );
     }
 
     return (
-        <div className="flex flex-col h-full bg-[#efeae2] relative w-full">
+        <div className="flex flex-col h-full bg-[#efeae2] dark:bg-gray-950 relative w-full transition-colors duration-200">
             {incomingCall && !callActive && (
-                <div className="fixed top-4 right-4 z-50 bg-white p-4 rounded-xl shadow-2xl border border-indigo-100 flex flex-col gap-3 w-72">
+                <div className="fixed top-4 right-4 z-50 bg-white dark:bg-gray-900 p-4 rounded-xl shadow-2xl border border-indigo-100 dark:border-gray-800 flex flex-col gap-3 w-72">
                     <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center">
+                        <div className="w-10 h-10 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-full flex items-center justify-center">
                             <Video size={20} />
                         </div>
                         <div>
-                            <h3 className="font-bold text-gray-800">{incomingCall.name}</h3>
-                            <p className="text-xs text-gray-500">Incoming Video Call...</p>
+                            <h3 className="font-bold text-gray-800 dark:text-gray-200">{incomingCall.name}</h3>
+                            <p className="text-xs text-gray-500 dark:text-gray-400">Incoming Video Call...</p>
                         </div>
                     </div>
                     <div className="flex gap-2 mt-1">
@@ -234,7 +234,7 @@ const ChatArea = ({ fetchAgain, setFetchAgain, setShowInfo }: { fetchAgain: bool
             )}
 
             {/* Header */}
-            <div className="px-4 py-3 bg-white border-b border-gray-200 flex justify-between items-center shadow-sm z-10">
+            <div className="px-4 py-3 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 flex justify-between items-center shadow-sm z-10 transition-colors duration-200">
                 <div className="flex items-center gap-3">
                     <button
                         onClick={() => setSelectedChat("")}
@@ -251,7 +251,7 @@ const ChatArea = ({ fetchAgain, setFetchAgain, setShowInfo }: { fetchAgain: bool
                             {selectedChat.isGroupChat ? "G" : getSenderName(selectedChat.users).charAt(0).toUpperCase()}
                         </div>
                         <div>
-                            <h2 className="font-bold text-gray-800 text-sm md:text-base">
+                            <h2 className="font-bold text-gray-800 dark:text-gray-100 text-sm md:text-base">
                                 {selectedChat.isGroupChat ? selectedChat.chatName : getSenderName(selectedChat.users)}
                             </h2>
                             { /* Online Mock */}
@@ -259,23 +259,23 @@ const ChatArea = ({ fetchAgain, setFetchAgain, setShowInfo }: { fetchAgain: bool
                         </div>
                     </div>
                 </div>
-                <div className="flex items-center gap-3 text-indigo-600">
+                <div className="flex items-center gap-3 text-indigo-600 dark:text-indigo-400">
                     <button
-                        className="p-2 hover:bg-indigo-50 rounded-full transition-colors hidden md:block"
+                        className="p-2 hover:bg-indigo-50 dark:hover:bg-gray-800 rounded-full transition-colors hidden md:block"
                         onClick={() => setCallActive(true)}
                     >
                         <Video size={20} />
                     </button>
                     <button
-                        className="p-2 hover:bg-indigo-50 rounded-full transition-colors hidden md:block"
+                        className="p-2 hover:bg-indigo-50 dark:hover:bg-gray-800 rounded-full transition-colors hidden md:block"
                         onClick={() => setCallActive(true)}
                     >
                         <Phone size={20} />
                     </button>
-                    <div className="h-6 w-px bg-gray-300 mx-1 hidden md:block"></div>
+                    <div className="h-6 w-px bg-gray-300 dark:bg-gray-700 mx-1 hidden md:block"></div>
                     <button
                         onClick={() => setShowInfo(true)}
-                        className="p-2 hover:bg-gray-100 rounded-full transition-colors text-gray-600"
+                        className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors text-gray-600 dark:text-gray-400"
                         title="Chat Info"
                     >
                         <MoreVertical size={20} />
@@ -293,7 +293,7 @@ const ChatArea = ({ fetchAgain, setFetchAgain, setShowInfo }: { fetchAgain: bool
                     Object.keys(groupedMessages).map((date) => (
                         <div key={date}>
                             <div className="flex justify-center my-4 sticky top-2 z-0">
-                                <span className="bg-white/90 shadow-sm px-3 py-1 rounded-full text-xs font-medium text-gray-500 border border-gray-100 backdrop-blur-sm">
+                                <span className="bg-white/90 dark:bg-gray-800/90 shadow-sm px-3 py-1 rounded-full text-xs font-medium text-gray-500 dark:text-gray-400 border border-gray-100 dark:border-gray-700 backdrop-blur-sm">
                                     {getDateLabel(date)}
                                 </span>
                             </div>
@@ -309,8 +309,8 @@ const ChatArea = ({ fetchAgain, setFetchAgain, setShowInfo }: { fetchAgain: bool
                                         className={`flex w-full ${isLastInGroup ? 'mb-3' : 'mb-1'} ${isSender ? "justify-end" : "justify-start"}`}
                                     >
                                         <div className={`max-w-[75%] md:max-w-[60%] px-4 py-2 rounded-2xl text-sm relative shadow-sm ${isSender
-                                            ? "bg-[#dcf8c6] text-gray-800 rounded-br-none"
-                                            : "bg-white text-gray-800 rounded-bl-none"
+                                            ? "bg-[#dcf8c6] dark:bg-indigo-900 text-gray-800 dark:text-gray-100 rounded-br-none"
+                                            : "bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 rounded-bl-none"
                                             }`}>
                                             {!isSender && selectedChat.isGroupChat && (
                                                 <p className="text-xs font-bold text-orange-500 mb-1">
@@ -350,7 +350,7 @@ const ChatArea = ({ fetchAgain, setFetchAgain, setShowInfo }: { fetchAgain: bool
                                                     )}
                                                 </div>
                                             )}
-                                            <div className={`flex items-center justify-end gap-1 mt-1 ${isSender ? "text-green-800/60" : "text-gray-400"}`}>
+                                            <div className={`flex items-center justify-end gap-1 mt-1 ${isSender ? "text-green-800/60 dark:text-indigo-300/60" : "text-gray-400"}`}>
                                                 <span className="text-[10px]">
                                                     {format(new Date(msg.createdAt), "h:mm a")}
                                                 </span>
@@ -379,10 +379,10 @@ const ChatArea = ({ fetchAgain, setFetchAgain, setShowInfo }: { fetchAgain: bool
 
             {/* Input Area */}
             {selectedFile && (
-                <div className="px-4 py-2 bg-gray-50 border-t border-gray-200 flex items-center justify-between z-10">
+                <div className="px-4 py-2 bg-gray-50 dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 flex items-center justify-between z-10 transition-colors duration-200">
                     <div className="flex items-center gap-2 overflow-hidden">
-                        <Paperclip size={16} className="text-gray-500 flex-shrink-0" />
-                        <span className="text-sm text-gray-600 truncate">{selectedFile.name}</span>
+                        <Paperclip size={16} className="text-gray-500 dark:text-gray-400 flex-shrink-0" />
+                        <span className="text-sm text-gray-600 dark:text-gray-300 truncate">{selectedFile.name}</span>
                     </div>
                     <button
                         onClick={() => setSelectedFile(null)}
@@ -392,13 +392,13 @@ const ChatArea = ({ fetchAgain, setFetchAgain, setShowInfo }: { fetchAgain: bool
                     </button>
                 </div>
             )}
-            <div className="p-3 bg-gray-100 border-t border-gray-200">
-                <div className="flex items-center gap-2 bg-white p-2 rounded-full shadow-sm border border-gray-200">
-                    <button className="p-2 text-gray-400 hover:text-gray-600 transition-colors">
+            <div className="p-3 bg-gray-100 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 transition-colors duration-200">
+                <div className="flex items-center gap-2 bg-white dark:bg-gray-800 p-2 rounded-full shadow-sm border border-gray-200 dark:border-gray-700">
+                    <button className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
                         <Smile size={24} />
                     </button>
                     <button
-                        className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
+                        className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
                         onClick={() => fileInputRef.current?.click()}
                     >
                         <Paperclip size={24} />
@@ -415,7 +415,7 @@ const ChatArea = ({ fetchAgain, setFetchAgain, setShowInfo }: { fetchAgain: bool
                     />
                     <input
                         type="text"
-                        className="flex-1 bg-transparent border-none focus:ring-0 text-gray-700 placeholder-gray-400 px-2"
+                        className="flex-1 bg-transparent border-none focus:ring-0 text-gray-700 dark:text-gray-200 placeholder-gray-400 px-2"
                         placeholder="Type a message..."
                         onChange={typingHandler}
                         value={newMessage}
@@ -423,7 +423,7 @@ const ChatArea = ({ fetchAgain, setFetchAgain, setShowInfo }: { fetchAgain: bool
                     />
                     <button
                         onClick={sendMessage}
-                        className={`p-2 rounded-full transition-all ${newMessage || selectedFile ? 'bg-indigo-600 text-white hover:bg-indigo-700' : 'bg-gray-200 text-gray-400'}`}
+                        className={`p-2 rounded-full transition-all ${newMessage || selectedFile ? 'bg-indigo-600 text-white hover:bg-indigo-700' : 'bg-gray-200 dark:bg-gray-700 text-gray-400 dark:text-gray-500'}`}
                     >
                         <Send size={20} className={newMessage ? 'ml-0.5' : ''} />
                     </button>

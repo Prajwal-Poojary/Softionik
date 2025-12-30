@@ -6,6 +6,7 @@ import { toast } from "react-toastify";
 import axios from "axios";
 import { Search, Bell, Menu, User, LogOut, X, Settings } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import ThemeToggle from "./ThemeToggle";
 
 const Navbar = () => {
     const [search, setSearch] = useState("");
@@ -76,29 +77,30 @@ const Navbar = () => {
 
     return (
         <>
-            <div className="bg-white h-16 border-b border-gray-200 flex items-center justify-between px-4 sticky top-0 z-30 shadow-sm">
+            <div className="bg-white dark:bg-gray-900 h-16 border-b border-gray-200 dark:border-gray-800 flex items-center justify-between px-4 sticky top-0 z-30 shadow-sm transition-colors duration-200">
                 {/* Logo & Search Trigger */}
                 <div className="flex items-center gap-4">
                     <div className="flex items-center gap-2">
                         <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center text-white font-bold text-xl">
                             S
                         </div>
-                        <span className="text-xl font-bold text-gray-800 tracking-tight hidden md:block">Softionik</span>
+                        <span className="text-xl font-bold text-gray-800 dark:text-white tracking-tight hidden md:block">Softionik</span>
                     </div>
 
                     <div
-                        className="flex items-center bg-gray-100 hover:bg-gray-200 transition-colors rounded-full px-4 py-2 cursor-pointer w-full md:w-64 gap-2"
+                        className="flex items-center bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors rounded-full px-4 py-2 cursor-pointer w-full md:w-64 gap-2"
                         onClick={() => setIsSearchOpen(true)}
                     >
-                        <Search size={18} className="text-gray-500" />
-                        <span className="text-sm text-gray-500">Search users...</span>
+                        <Search size={18} className="text-gray-500 dark:text-gray-400" />
+                        <span className="text-sm text-gray-500 dark:text-gray-400">Search users...</span>
                     </div>
                 </div>
 
                 {/* Right Actions */}
                 <div className="flex items-center gap-4">
+                    <ThemeToggle />
                     <div className="relative">
-                        <button className="p-2 text-gray-600 hover:bg-gray-100 rounded-full transition-colors relative">
+                        <button className="p-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors relative">
                             <Bell size={20} />
                             {notification.length > 0 && (
                                 <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white"></span>
@@ -108,10 +110,10 @@ const Navbar = () => {
 
                     <div className="relative">
                         <button
-                            className="flex items-center gap-2 p-1 pl-2 pr-1 rounded-full hover:bg-gray-100 transition-colors border border-transparent hover:border-gray-200"
+                            className="flex items-center gap-2 p-1 pl-2 pr-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors border border-transparent hover:border-gray-200 dark:hover:border-gray-700"
                             onClick={() => setIsProfileOpen(!isProfileOpen)}
                         >
-                            <span className="text-sm font-medium text-gray-700 hidden md:block">{user.name}</span>
+                            <span className="text-sm font-medium text-gray-700 dark:text-gray-200 hidden md:block">{user.name}</span>
                             <img
                                 src={user.pic}
                                 alt={user.name}
@@ -125,22 +127,22 @@ const Navbar = () => {
                                     initial={{ opacity: 0, y: 10 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     exit={{ opacity: 0, y: 10 }}
-                                    className="absolute right-0 top-full mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-100 py-1 z-50 overflow-hidden"
+                                    className="absolute right-0 top-full mt-2 w-48 bg-white dark:bg-gray-900 rounded-xl shadow-lg border border-gray-100 dark:border-gray-800 py-1 z-50 overflow-hidden"
                                 >
-                                    <div className="px-4 py-3 border-b border-gray-50 bg-gray-50/50">
-                                        <p className="text-sm font-medium text-gray-900">{user.name}</p>
-                                        <p className="text-xs text-gray-500 truncate">{user.email}</p>
+                                    <div className="px-4 py-3 border-b border-gray-50 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/50">
+                                        <p className="text-sm font-medium text-gray-900 dark:text-white">{user.name}</p>
+                                        <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{user.email}</p>
                                     </div>
-                                    <button className="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2">
+                                    <button className="w-full text-left px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 flex items-center gap-2">
                                         <User size={16} /> Profile
                                     </button>
-                                    <button className="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2">
+                                    <button className="w-full text-left px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 flex items-center gap-2">
                                         <Settings size={16} /> Settings
                                     </button>
-                                    <div className="h-px bg-gray-100 my-1"></div>
+                                    <div className="h-px bg-gray-100 dark:bg-gray-800 my-1"></div>
                                     <button
                                         onClick={logoutHandler}
-                                        className="w-full text-left px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2"
+                                        className="w-full text-left px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/10 flex items-center gap-2"
                                     >
                                         <LogOut size={16} /> Logout
                                     </button>
@@ -167,9 +169,9 @@ const Navbar = () => {
                             animate={{ x: 0 }}
                             exit={{ x: "-100%" }}
                             transition={{ type: "spring", damping: 25, stiffness: 200 }}
-                            className="fixed left-0 top-0 h-full w-80 md:w-96 bg-white z-50 shadow-2xl flex flex-col"
+                            className="fixed left-0 top-0 h-full w-80 md:w-96 bg-white dark:bg-gray-900 z-50 shadow-2xl flex flex-col transition-colors duration-200"
                         >
-                            <div className="p-4 border-b border-gray-100 flex items-center justify-between bg-indigo-600">
+                            <div className="p-4 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between bg-indigo-600 dark:bg-indigo-700">
                                 <h2 className="text-white font-semibold text-lg">Search Users</h2>
                                 <button
                                     onClick={() => setIsSearchOpen(false)}
@@ -179,10 +181,10 @@ const Navbar = () => {
                                 </button>
                             </div>
 
-                            <div className="p-4 bg-gray-50 border-b border-gray-200">
+                            <div className="p-4 bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800">
                                 <div className="flex gap-2">
                                     <input
-                                        className="flex-1 border-none bg-white shadow-sm rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-indigo-500"
+                                        className="flex-1 border-none bg-white dark:bg-gray-800 shadow-sm rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-indigo-500 dark:text-white"
                                         placeholder="Name or email..."
                                         value={search}
                                         onChange={(e) => setSearch(e.target.value)}
@@ -208,7 +210,7 @@ const Navbar = () => {
                                             <div
                                                 key={user._id}
                                                 onClick={() => accessChat(user._id)}
-                                                className="flex items-center gap-3 p-3 hover:bg-indigo-50 rounded-xl cursor-pointer transition-all group border border-transparent hover:border-indigo-100"
+                                                className="flex items-center gap-3 p-3 hover:bg-indigo-50 dark:hover:bg-gray-800 rounded-xl cursor-pointer transition-all group border border-transparent hover:border-indigo-100 dark:hover:border-gray-700"
                                             >
                                                 <img
                                                     src={user.pic}
@@ -216,8 +218,8 @@ const Navbar = () => {
                                                     className="w-10 h-10 rounded-full object-cover shadow-sm group-hover:scale-105 transition-transform"
                                                 />
                                                 <div>
-                                                    <p className="font-semibold text-gray-800 text-sm">{user.name}</p>
-                                                    <p className="text-xs text-gray-500">{user.email}</p>
+                                                    <p className="font-semibold text-gray-800 dark:text-gray-200 text-sm">{user.name}</p>
+                                                    <p className="text-xs text-gray-500 dark:text-gray-400">{user.email}</p>
                                                 </div>
                                             </div>
                                         ))}
