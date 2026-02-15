@@ -9,7 +9,9 @@ const Signup = () => {
     const [email, setEmail] = useState("");
     const [confirmpassword, setConfirmpassword] = useState("");
     const [password, setPassword] = useState("");
-    const [pic, setPic] = useState<string>();
+    const [pic] = useState<string>(
+        "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg"
+    );
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
@@ -93,7 +95,7 @@ const Signup = () => {
                 <label className="font-medium text-gray-700">Name</label>
                 <input
                     placeholder="Enter Your Name"
-                    className="border p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="border p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
                     onChange={(e) => setName(e.target.value)}
                 />
             </div>
@@ -102,7 +104,7 @@ const Signup = () => {
                 <input
                     type="email"
                     placeholder="Enter Your Email Address"
-                    className="border p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="border p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
                     onChange={(e) => setEmail(e.target.value)}
                 />
             </div>
@@ -111,7 +113,7 @@ const Signup = () => {
                 <input
                     type="password"
                     placeholder="Enter Password"
-                    className="border p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="border p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
                     onChange={(e) => setPassword(e.target.value)}
                 />
             </div>
@@ -120,7 +122,7 @@ const Signup = () => {
                 <input
                     type="password"
                     placeholder="Confirm Password"
-                    className="border p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="border p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
                     onChange={(e) => setConfirmpassword(e.target.value)}
                 />
             </div>
