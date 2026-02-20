@@ -29,6 +29,26 @@ const sendMessage = asyncHandler(async (req, res) => {
         return res.sendStatus(400);
     }
 
+    const chatInstance = await Chat.findById(chatId);
+    if (!chatInstance) {
+        return res.status(404).json({ message: "Chat not found" });
+    }
+
+    if (!chatInstance.isGroupChat) {
+        const otherUserId = chatInstance.users.find((u) => u.toString() !== req.user._id.toString());
+        if (otherUserId) {
+            const otherUser = await User.findById(otherUserId);
+            const currentUser = await User.findById(req.user._id);
+
+            const iAmBlocked = otherUser?.blockedUsers?.includes(req.user._id);
+            const iBlockedThem = currentUser?.blockedUsers?.includes(otherUserId);
+
+            if (iAmBlocked || iBlockedThem) {
+                return res.status(403).json({ message: "Cannot send message. User is blocked." });
+            }
+        }
+    }
+
     var newMessage = {
         sender: req.user._id,
         content: content || "",

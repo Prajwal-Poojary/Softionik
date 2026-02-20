@@ -7,6 +7,7 @@ import { Send, Paperclip, Smile, MoreVertical, Phone, Video, ArrowLeft, CheckChe
 import { motion } from "framer-motion";
 import { format, isToday, isYesterday } from "date-fns";
 import CallInterface from "./CallInterface";
+import EmojiPicker, { EmojiClickData } from 'emoji-picker-react';
 
 const ENDPOINT = "http://localhost:5000";
 // Variable to keep track of socket instance outside of component render cycle if needed, 
@@ -21,10 +22,12 @@ const ChatArea = ({ fetchAgain, setFetchAgain, setShowInfo }: { fetchAgain: bool
     const [typing, setTyping] = useState(false);
     const [isTyping, setIsTyping] = useState(false);
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
-    const [callActive, setCallActive] = useState(false);
+    const [callActive, setCallActive] = useState<{ video: boolean } | false>(false);
     const [incomingCall, setIncomingCall] = useState<any>(null);
+    const [showEmojiPicker, setShowEmojiPicker] = useState(false);
     const messagesEndRef = useRef<null | HTMLDivElement>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const emojiPickerRef = useRef<HTMLDivElement>(null);
 
     const { user, selectedChat, setSelectedChat, notification, setNotification } = ChatState();
 
@@ -78,8 +81,12 @@ const ChatArea = ({ fetchAgain, setFetchAgain, setShowInfo }: { fetchAgain: bool
 
                 socket.emit("new message", data);
                 setMessages([...messages, data]);
-            } catch (error) {
-                toast.error("Failed to send the Message");
+            } catch (error: any) {
+                if (error.response && error.response.status === 403) {
+                    toast.error("Cannot send message. User is blocked.");
+                } else {
+                    toast.error("Failed to send the Message");
+                }
             }
         }
     };
@@ -134,6 +141,37 @@ const ChatArea = ({ fetchAgain, setFetchAgain, setShowInfo }: { fetchAgain: bool
         }, timerLength);
     };
 
+    const onEmojiClick = (emojiData: EmojiClickData, event: MouseEvent) => {
+        setNewMessage((prevInput) => prevInput + emojiData.emoji);
+    };
+
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (emojiPickerRef.current && !emojiPickerRef.current.contains(event.target as Node)) {
+                setShowEmojiPicker(false);
+            }
+        };
+
+        if (showEmojiPicker) {
+            document.addEventListener("mousedown", handleClickOutside);
+        } else {
+            document.removeEventListener("mousedown", handleClickOutside);
+        }
+
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, [showEmojiPicker]);
+
+    useEffect(() => {
+        const handleStartCall = (e: any) => {
+            setCallActive({ video: e.detail.video });
+            // Let the effect open CallInterface
+        };
+        window.addEventListener('start-app-call', handleStartCall);
+        return () => window.removeEventListener('start-app-call', handleStartCall);
+    }, []);
+
     const getSenderName = (users: any[]) => {
         // Only valid for 1-on-1 logic usually, assuming user is logged in context
         return users[0]?._id === user?._id ? users[1]?.name : users[0]?.name;
@@ -174,16 +212,16 @@ const ChatArea = ({ fetchAgain, setFetchAgain, setShowInfo }: { fetchAgain: bool
                 <div className="fixed top-4 right-4 z-50 bg-white dark:bg-gray-900 p-4 rounded-xl shadow-2xl border border-indigo-100 dark:border-gray-800 flex flex-col gap-3 w-72">
                     <div className="flex items-center gap-3">
                         <div className="w-10 h-10 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-full flex items-center justify-center">
-                            <Video size={20} />
+                            {incomingCall.isVideo ? <Video size={20} /> : <Phone size={20} />}
                         </div>
                         <div>
                             <h3 className="font-bold text-gray-800 dark:text-gray-200">{incomingCall.name}</h3>
-                            <p className="text-xs text-gray-500 dark:text-gray-400">Incoming Video Call...</p>
+                            <p className="text-xs text-gray-500 dark:text-gray-400">Incoming {incomingCall.isVideo ? "Video" : "Audio"} Call...</p>
                         </div>
                     </div>
                     <div className="flex gap-2 mt-1">
                         <button
-                            onClick={() => setCallActive(true)}
+                            onClick={() => setCallActive({ video: incomingCall.isVideo || false })}
                             className="flex-1 bg-green-500 hover:bg-green-600 text-white chat-button py-2 rounded-lg text-sm font-medium transition-colors"
                         >
                             Accept
@@ -205,6 +243,7 @@ const ChatArea = ({ fetchAgain, setFetchAgain, setShowInfo }: { fetchAgain: bool
                     targetUser={incomingCall ? { _id: incomingCall.from, name: incomingCall.name } : selectedChat.users.find((u: any) => u._id !== user._id)}
                     isInitiator={!incomingCall}
                     incomingSignal={incomingCall?.signal}
+                    isVideo={callActive.video}
                     onClose={async (missed) => {
                         setCallActive(false);
                         setIncomingCall(null);
@@ -262,13 +301,13 @@ const ChatArea = ({ fetchAgain, setFetchAgain, setShowInfo }: { fetchAgain: bool
                 <div className="flex items-center gap-3 text-indigo-600 dark:text-indigo-400">
                     <button
                         className="p-2 hover:bg-indigo-50 dark:hover:bg-gray-800 rounded-full transition-colors hidden md:block"
-                        onClick={() => setCallActive(true)}
+                        onClick={() => setCallActive({ video: true })}
                     >
                         <Video size={20} />
                     </button>
                     <button
                         className="p-2 hover:bg-indigo-50 dark:hover:bg-gray-800 rounded-full transition-colors hidden md:block"
-                        onClick={() => setCallActive(true)}
+                        onClick={() => setCallActive({ video: false })}
                     >
                         <Phone size={20} />
                     </button>
@@ -393,41 +432,57 @@ const ChatArea = ({ fetchAgain, setFetchAgain, setShowInfo }: { fetchAgain: bool
                 </div>
             )}
             <div className="p-3 bg-gray-100 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 transition-colors duration-200">
-                <div className="flex items-center gap-2 bg-white dark:bg-gray-800 p-2 rounded-full shadow-sm border border-gray-200 dark:border-gray-700">
-                    <button className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
-                        <Smile size={24} />
-                    </button>
-                    <button
-                        className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
-                        onClick={() => fileInputRef.current?.click()}
-                    >
-                        <Paperclip size={24} />
-                    </button>
-                    <input
-                        type="file"
-                        ref={fileInputRef}
-                        className="hidden"
-                        onChange={(e) => {
-                            if (e.target.files && e.target.files[0]) {
-                                setSelectedFile(e.target.files[0]);
-                            }
-                        }}
-                    />
-                    <input
-                        type="text"
-                        className="flex-1 bg-transparent border-none focus:ring-0 text-gray-700 dark:text-gray-200 placeholder-gray-400 px-2"
-                        placeholder="Type a message..."
-                        onChange={typingHandler}
-                        value={newMessage}
-                        onKeyDown={(e) => sendMessage(e)}
-                    />
-                    <button
-                        onClick={sendMessage}
-                        className={`p-2 rounded-full transition-all ${newMessage || selectedFile ? 'bg-indigo-600 text-white hover:bg-indigo-700' : 'bg-gray-200 dark:bg-gray-700 text-gray-400 dark:text-gray-500'}`}
-                    >
-                        <Send size={20} className={newMessage ? 'ml-0.5' : ''} />
-                    </button>
-                </div>
+                {showEmojiPicker && (
+                    <div className="absolute bottom-20 left-4 z-50 shadow-2xl rounded-lg overflow-hidden" ref={emojiPickerRef}>
+                        <EmojiPicker onEmojiClick={onEmojiClick} />
+                    </div>
+                )}
+
+                {/* Check if Blocked */}
+                {!selectedChat.isGroupChat && user?.blockedUsers?.includes(selectedChat.users.find((u: any) => u._id !== user._id)?._id) ? (
+                    <div className="flex items-center justify-center p-2 text-sm text-gray-500 font-medium bg-white dark:bg-gray-800 rounded-lg">
+                        You have blocked this contact. Unblock them to send a message.
+                    </div>
+                ) : (
+                    <div className="flex items-center gap-2 bg-white dark:bg-gray-800 p-2 rounded-full shadow-sm border border-gray-200 dark:border-gray-700">
+                        <button
+                            className={`p-2 transition-colors ${showEmojiPicker ? 'text-indigo-600 dark:text-indigo-400' : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'}`}
+                            onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+                        >
+                            <Smile size={24} />
+                        </button>
+                        <button
+                            className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+                            onClick={() => fileInputRef.current?.click()}
+                        >
+                            <Paperclip size={24} />
+                        </button>
+                        <input
+                            type="file"
+                            ref={fileInputRef}
+                            className="hidden"
+                            onChange={(e) => {
+                                if (e.target.files && e.target.files[0]) {
+                                    setSelectedFile(e.target.files[0]);
+                                }
+                            }}
+                        />
+                        <input
+                            type="text"
+                            className="flex-1 bg-transparent border-none focus:ring-0 text-gray-700 dark:text-gray-200 placeholder-gray-400 px-2"
+                            placeholder="Type a message..."
+                            onChange={typingHandler}
+                            value={newMessage}
+                            onKeyDown={(e) => sendMessage(e)}
+                        />
+                        <button
+                            onClick={sendMessage}
+                            className={`p-2 rounded-full transition-all ${newMessage || selectedFile ? 'bg-indigo-600 text-white hover:bg-indigo-700' : 'bg-gray-200 dark:bg-gray-700 text-gray-400 dark:text-gray-500'}`}
+                        >
+                            <Send size={20} className={newMessage ? 'ml-0.5' : ''} />
+                        </button>
+                    </div>
+                )}
             </div>
         </div>
     );

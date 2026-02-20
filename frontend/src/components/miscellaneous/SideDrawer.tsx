@@ -102,7 +102,7 @@ const SideDrawer = () => {
 
                     <div className="relative group">
                         <button className="flex items-center space-x-1 hover:bg-gray-100 p-2 rounded-md">
-                            <img src={user.pic} alt={user.name} className="w-8 h-8 rounded-full cursor-pointer" />
+                            <img src={user.pic.startsWith('http') ? user.pic : `http://localhost:5000${user.pic}`} alt={user.name} className="w-8 h-8 rounded-full cursor-pointer object-cover" />
                             <span className="text-sm font-medium ml-1">V</span>
                         </button>
                         {/* Dropdown */}
@@ -161,7 +161,7 @@ const SideDrawer = () => {
                                     onClick={() => accessChat(user._id)}
                                     className="bg-gray-100 hover:bg-blue-100 cursor-pointer p-2 rounded flex items-center mb-2"
                                 >
-                                    <img src={user.pic} alt={user.name} className="w-8 h-8 rounded-full mr-2" />
+                                    <img src={user.pic.startsWith('http') ? user.pic : `http://localhost:5000${user.pic}`} alt={user.name} className="w-8 h-8 rounded-full mr-2 object-cover" />
                                     <div>
                                         <p className="font-semibold">{user.name}</p>
                                         <p className="text-xs text-gray-500">Email: {user.email}</p>

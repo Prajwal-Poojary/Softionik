@@ -2,6 +2,9 @@ import { ChatState } from "../Context/ChatProvider";
 import { X, User, Phone, Video, Image, ChevronRight, Verified, Clock } from "lucide-react";
 import { motion } from "framer-motion";
 import { format } from "date-fns";
+import { toast } from "react-toastify";
+import axios from "axios";
+import { useState } from "react";
 
 const InfoPanel = ({ onClose }: { onClose: () => void }) => {
     const { selectedChat, user } = ChatState();
@@ -13,6 +16,36 @@ const InfoPanel = ({ onClose }: { onClose: () => void }) => {
     };
 
     const sender = !selectedChat.isGroupChat ? getSender(user, selectedChat.users) : null;
+    const [loadingBlock, setLoadingBlock] = useState(false);
+
+    const isBlocked = user?.blockedUsers?.includes(sender?._id);
+
+    const handleBlockToggle = async () => {
+        if (!sender) return;
+        setLoadingBlock(true);
+        try {
+            const config = {
+                headers: { Authorization: `Bearer ${user.token}` },
+            };
+            const endpoint = isBlocked ? "/api/user/unblock" : "/api/user/block";
+            const payload = isBlocked ? { unblockId: sender._id } : { blockId: sender._id };
+
+            const { data } = await axios.put(endpoint, payload, config);
+
+            // Update local user state
+            const updatedUser = { ...user, blockedUsers: data.blockedUsers };
+            localStorage.setItem("userInfo", JSON.stringify(updatedUser));
+            // Assuming ChatState context will automatically update or we might need to manually trigger it.
+            // For now, page refresh might be needed, or we just mutate the user object directly for instant UI update:
+            user.blockedUsers = data.blockedUsers;
+
+            toast.success(data.message);
+        } catch (error: any) {
+            toast.error(error.response?.data?.message || "Failed to update block status");
+        } finally {
+            setLoadingBlock(false);
+        }
+    };
 
     return (
         <motion.div
@@ -43,7 +76,7 @@ const InfoPanel = ({ onClose }: { onClose: () => void }) => {
                             "G"
                         ) : (
                             <img
-                                src={sender?.pic}
+                                src={sender?.pic?.startsWith('http') ? sender?.pic : `http://localhost:5000${sender?.pic}`}
                                 alt={sender?.name}
                                 className="w-full h-full rounded-full object-cover"
                             />
@@ -61,19 +94,34 @@ const InfoPanel = ({ onClose }: { onClose: () => void }) => {
 
                     {/* Actions */}
                     <div className="flex gap-4 mt-6 w-full justify-center">
-                        <button className="flex flex-col items-center gap-1 min-w-[60px]">
+                        <button
+                            className="flex flex-col items-center gap-1 min-w-[60px]"
+                            onClick={() => window.dispatchEvent(new CustomEvent('start-app-call', { detail: { video: false } }))}
+                        >
                             <div className="w-10 h-10 rounded-full bg-indigo-50 dark:bg-gray-800 text-indigo-600 dark:text-indigo-400 flex items-center justify-center hover:bg-indigo-100 dark:hover:bg-gray-700 transition-colors shadow-sm">
                                 <Phone size={20} />
                             </div>
                             <span className="text-xs text-indigo-600 dark:text-indigo-400 font-medium">Audio</span>
                         </button>
-                        <button className="flex flex-col items-center gap-1 min-w-[60px]">
+                        <button
+                            className="flex flex-col items-center gap-1 min-w-[60px]"
+                            onClick={() => window.dispatchEvent(new CustomEvent('start-app-call', { detail: { video: true } }))}
+                        >
                             <div className="w-10 h-10 rounded-full bg-indigo-50 dark:bg-gray-800 text-indigo-600 dark:text-indigo-400 flex items-center justify-center hover:bg-indigo-100 dark:hover:bg-gray-700 transition-colors shadow-sm">
                                 <Video size={20} />
                             </div>
                             <span className="text-xs text-indigo-600 dark:text-indigo-400 font-medium">Video</span>
                         </button>
-                        <button className="flex flex-col items-center gap-1 min-w-[60px]">
+                        <button
+                            className="flex flex-col items-center gap-1 min-w-[60px]"
+                            onClick={() => {
+                                if (sender?.pic) {
+                                    window.open(sender.pic.startsWith('http') ? sender.pic : `http://localhost:5000${sender.pic}`, '_blank');
+                                } else {
+                                    toast.info("No profile picture available.");
+                                }
+                            }}
+                        >
                             <div className="w-10 h-10 rounded-full bg-indigo-50 dark:bg-gray-800 text-indigo-600 dark:text-indigo-400 flex items-center justify-center hover:bg-indigo-100 dark:hover:bg-gray-700 transition-colors shadow-sm">
                                 <User size={20} />
                             </div>
@@ -126,7 +174,7 @@ const InfoPanel = ({ onClose }: { onClose: () => void }) => {
                         <div className="space-y-3">
                             {selectedChat.users.map((u: any) => (
                                 <div key={u._id} className="flex items-center gap-3">
-                                    <img src={u.pic} className="w-8 h-8 rounded-full" alt={u.name} />
+                                    <img src={u.pic.startsWith('http') ? u.pic : `http://localhost:5000${u.pic}`} className="w-8 h-8 rounded-full object-cover" alt={u.name} />
                                     <div className="flex-1 min-w-0">
                                         <p className="text-sm font-medium text-gray-800 dark:text-gray-200 truncate">{u.name}</p>
                                         <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{u.email}</p>
@@ -142,9 +190,16 @@ const InfoPanel = ({ onClose }: { onClose: () => void }) => {
 
                 {/* Danger Zone */}
                 <div className="p-4 mt-2 mb-8">
-                    <button className="w-full py-3 bg-red-50 dark:bg-red-900/10 text-red-600 dark:text-red-400 rounded-xl text-sm font-semibold hover:bg-red-100 dark:hover:bg-red-900/20 transition-colors flex items-center justify-center gap-2">
+                    <button
+                        onClick={selectedChat.isGroupChat ? () => toast.info("Exit group coming soon") : handleBlockToggle}
+                        disabled={loadingBlock}
+                        className={`w-full py-3 rounded-xl text-sm font-semibold transition-colors flex items-center justify-center gap-2 ${isBlocked && !selectedChat.isGroupChat
+                            ? "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700"
+                            : "bg-red-50 dark:bg-red-900/10 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/20"
+                            } ${loadingBlock ? "opacity-50 cursor-not-allowed" : ""}`}
+                    >
                         <LogOutIcon size={16} />
-                        {selectedChat.isGroupChat ? "Exit Group" : "Block User"}
+                        {selectedChat.isGroupChat ? "Exit Group" : (isBlocked ? "Unblock User" : "Block User")}
                     </button>
                 </div>
             </div>

@@ -9,22 +9,25 @@ interface CallInterfaceProps {
     targetUser: any; // The other person (for outgoing) or Caller
     isInitiator: boolean;
     incomingSignal?: any;
+    isVideo?: boolean;
     onClose: (missed?: boolean) => void;
 }
 
-const CallInterface: React.FC<CallInterfaceProps> = ({ socket, user, targetUser, isInitiator, incomingSignal, onClose }) => {
+const CallInterface: React.FC<CallInterfaceProps> = ({ socket, user, targetUser, isInitiator, incomingSignal, isVideo = true, onClose }) => {
     const [stream, setStream] = useState<MediaStream | null>(null);
     const [callAccepted, setCallAccepted] = useState(false);
     const [callEnded, setCallEnded] = useState(false);
     const [micOn, setMicOn] = useState(true);
-    const [videoOn, setVideoOn] = useState(true);
+    const [videoOn, setVideoOn] = useState(isVideo);
 
     const myVideo = useRef<HTMLVideoElement>(null);
     const userVideo = useRef<HTMLVideoElement>(null);
     const connectionRef = useRef<Peer.Instance | null>(null);
 
     useEffect(() => {
-        navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+        // Request video even for audio-only since we can disable track later, easing signaling 
+        // OR request cleanly
+        navigator.mediaDevices.getUserMedia({ video: isVideo, audio: true })
             .then((currentStream) => {
                 setStream(currentStream);
                 if (myVideo.current) {
@@ -44,6 +47,7 @@ const CallInterface: React.FC<CallInterfaceProps> = ({ socket, user, targetUser,
                             signalData: data,
                             from: user._id,
                             name: user.name,
+                            isVideo: isVideo
                         });
                     });
 

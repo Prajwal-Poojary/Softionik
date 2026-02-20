@@ -82,4 +82,89 @@ const authUser = asyncHandler(async (req, res) => {
     }
 });
 
-export { allUsers, registerUser, authUser };
+//@description     Update user profile
+//@route           PUT /api/user/profile
+//@access          Protected
+const updateUserProfile = asyncHandler(async (req, res) => {
+    const user = await User.findById(req.user._id);
+
+    if (user) {
+        user.name = req.body.name || user.name;
+        user.about = req.body.about || user.about;
+
+        if (req.file) {
+            user.pic = `/uploads/${req.file.filename}`;
+        }
+
+        const updatedUser = await user.save();
+
+        res.json({
+            _id: updatedUser._id,
+            name: updatedUser.name,
+            email: updatedUser.email,
+            isAdmin: updatedUser.isAdmin,
+            pic: updatedUser.pic,
+            about: updatedUser.about,
+            token: generateToken(updatedUser._id),
+        });
+    } else {
+        res.status(404);
+        throw new Error("User not found");
+    }
+});
+
+//@description     Block a user
+//@route           PUT /api/user/block
+//@access          Protected
+const blockUser = asyncHandler(async (req, res) => {
+    const { blockId } = req.body;
+
+    if (!blockId) {
+        res.status(400);
+        throw new Error("Target user ID is required");
+    }
+
+    const user = await User.findById(req.user._id);
+    if (!user) {
+        res.status(404);
+        throw new Error("User not found");
+    }
+
+    if (!user.blockedUsers) {
+        user.blockedUsers = [];
+    }
+
+    if (!user.blockedUsers.includes(blockId)) {
+        user.blockedUsers.push(blockId);
+        await user.save();
+    }
+
+    res.status(200).json({ message: "User blocked successfully", blockedUsers: user.blockedUsers });
+});
+
+//@description     Unblock a user
+//@route           PUT /api/user/unblock
+//@access          Protected
+const unblockUser = asyncHandler(async (req, res) => {
+    const { unblockId } = req.body;
+
+    if (!unblockId) {
+        res.status(400);
+        throw new Error("Target user ID is required");
+    }
+
+    const user = await User.findById(req.user._id);
+    if (!user) {
+        res.status(404);
+        throw new Error("User not found");
+    }
+
+    if (user.blockedUsers && user.blockedUsers.includes(unblockId)) {
+        user.blockedUsers = user.blockedUsers.filter(id => id.toString() !== unblockId.toString());
+        await user.save();
+    }
+
+    res.status(200).json({ message: "User unblocked successfully", blockedUsers: user.blockedUsers });
+});
+
+export { allUsers, registerUser, authUser, updateUserProfile, blockUser, unblockUser };

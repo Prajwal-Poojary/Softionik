@@ -4,9 +4,10 @@ import { ChatState } from "../Context/ChatProvider";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import axios from "axios";
-import { Search, Bell, Menu, User, LogOut, X, Settings } from "lucide-react";
+import { Search, Bell, User, LogOut, X, Settings } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import ThemeToggle from "./ThemeToggle";
+import ProfileModal from "./miscellaneous/ProfileModal";
 
 const Navbar = () => {
     const [search, setSearch] = useState("");
@@ -15,6 +16,8 @@ const Navbar = () => {
     const [loadingChat, setLoadingChat] = useState(false);
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const [isProfileOpen, setIsProfileOpen] = useState(false);
+    const [isNotificationOpen, setIsNotificationOpen] = useState(false);
+    const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
 
     const {
         user,
@@ -100,12 +103,48 @@ const Navbar = () => {
                 <div className="flex items-center gap-4">
                     <ThemeToggle />
                     <div className="relative">
-                        <button className="p-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors relative">
+                        <button
+                            className="p-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors relative"
+                            onClick={() => setIsNotificationOpen(!isNotificationOpen)}
+                        >
                             <Bell size={20} />
                             {notification.length > 0 && (
                                 <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white"></span>
                             )}
                         </button>
+
+                        <AnimatePresence>
+                            {isNotificationOpen && (
+                                <motion.div
+                                    initial={{ opacity: 0, y: 10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0, y: 10 }}
+                                    className="absolute right-0 top-full mt-2 w-72 bg-white dark:bg-gray-900 rounded-xl shadow-lg border border-gray-100 dark:border-gray-800 py-2 z-50 overflow-hidden"
+                                >
+                                    <h3 className="px-4 py-2 font-semibold text-gray-700 dark:text-gray-200 border-b border-gray-100 dark:border-gray-800">Notifications</h3>
+                                    <div className="max-h-72 overflow-y-auto">
+                                        {!notification.length && (
+                                            <div className="px-4 py-4 text-sm text-gray-500 text-center">No New Messages</div>
+                                        )}
+                                        {notification.map((notif: any) => (
+                                            <div
+                                                key={notif._id}
+                                                className="px-4 py-3 hover:bg-indigo-50 dark:hover:bg-gray-800 cursor-pointer text-sm text-gray-700 dark:text-gray-300 border-b border-gray-50 dark:border-gray-800 last:border-0 transition-colors"
+                                                onClick={() => {
+                                                    setSelectedChat(notif.chat);
+                                                    setNotification(notification.filter((n: any) => n !== notif));
+                                                    setIsNotificationOpen(false);
+                                                }}
+                                            >
+                                                {notif.chat.isGroupChat
+                                                    ? `New Message in ${notif.chat.chatName}`
+                                                    : `New Message from ${notif.sender.name}`}
+                                            </div>
+                                        ))}
+                                    </div>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
                     </div>
 
                     <div className="relative">
@@ -115,7 +154,7 @@ const Navbar = () => {
                         >
                             <span className="text-sm font-medium text-gray-700 dark:text-gray-200 hidden md:block">{user.name}</span>
                             <img
-                                src={user.pic}
+                                src={user.pic.startsWith('http') ? user.pic : `http://localhost:5000${user.pic}`}
                                 alt={user.name}
                                 className="w-8 h-8 rounded-full object-cover border border-gray-200"
                             />
@@ -133,7 +172,13 @@ const Navbar = () => {
                                         <p className="text-sm font-medium text-gray-900 dark:text-white">{user.name}</p>
                                         <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{user.email}</p>
                                     </div>
-                                    <button className="w-full text-left px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 flex items-center gap-2">
+                                    <button
+                                        onClick={() => {
+                                            setIsProfileModalOpen(true);
+                                            setIsProfileOpen(false);
+                                        }}
+                                        className="w-full text-left px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 flex items-center gap-2"
+                                    >
                                         <User size={16} /> Profile
                                     </button>
                                     <button className="w-full text-left px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 flex items-center gap-2">
@@ -213,7 +258,7 @@ const Navbar = () => {
                                                 className="flex items-center gap-3 p-3 hover:bg-indigo-50 dark:hover:bg-gray-800 rounded-xl cursor-pointer transition-all group border border-transparent hover:border-indigo-100 dark:hover:border-gray-700"
                                             >
                                                 <img
-                                                    src={user.pic}
+                                                    src={user.pic.startsWith('http') ? user.pic : `http://localhost:5000${user.pic}`}
                                                     alt={user.name}
                                                     className="w-10 h-10 rounded-full object-cover shadow-sm group-hover:scale-105 transition-transform"
                                                 />
@@ -236,6 +281,8 @@ const Navbar = () => {
                     </>
                 )}
             </AnimatePresence>
+
+            <ProfileModal isOpen={isProfileModalOpen} onClose={() => setIsProfileModalOpen(false)} />
         </>
     );
 };

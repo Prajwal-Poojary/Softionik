@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { X, Camera, User, Info } from "lucide-react";
 import { ChatState } from "../../Context/ChatProvider";
 import axios from "axios";
@@ -9,6 +9,9 @@ const ProfileModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
     const [name, setName] = useState(user.name);
     const [about, setAbout] = useState(user.about || "Hey there! I am using Softionik Chat.");
     const [loading, setLoading] = useState(false);
+    const [selectedImage, setSelectedImage] = useState<File | null>(null);
+    const [imagePreview, setImagePreview] = useState<string | null>(null);
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
     if (!isOpen) return null;
 
@@ -21,25 +24,30 @@ const ProfileModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
                 },
             };
 
-            // Assuming we have an endpoint to update profile. 
-            // We might need to create it or update existing user update route.
-            // For now, let's assume we implement it or logic here.
-            // Since we haven't modified backend user routes to update generic info specifically, 
-            // let's just pretend or allow updating name if logic exists. 
-            // Wait, we need to implement the backend route for this to work properly.
+            const formData = new FormData();
+            formData.append("name", name);
+            formData.append("about", about);
+            if (selectedImage) {
+                formData.append("pic", selectedImage);
+            }
 
-            // Let's postpone backend implementation of update and just update local state/mock for now 
-            // OR quickly add the route. Let's add the route.
+            const { data } = await axios.put("/api/user/profile", formData, config);
 
-            // For now, simple mock of success:
-            setUser({ ...user, name, about });
-            localStorage.setItem("userInfo", JSON.stringify({ ...user, name, about }));
+            setUser(data);
+            localStorage.setItem("userInfo", JSON.stringify(data));
             toast.success("Profile Updated!");
             setLoading(false);
             onClose();
         } catch (error) {
             toast.error("Failed to update profile");
             setLoading(false);
+        }
+    };
+
+    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files[0]) {
+            setSelectedImage(e.target.files[0]);
+            setImagePreview(URL.createObjectURL(e.target.files[0]));
         }
     };
 
@@ -57,12 +65,22 @@ const ProfileModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
                     {/* Avatar */}
                     <div className="flex justify-center">
                         <div className="relative">
+                            <input
+                                type="file"
+                                accept="image/*"
+                                ref={fileInputRef}
+                                onChange={handleImageChange}
+                                className="hidden"
+                            />
                             <img
-                                src={user.pic}
+                                src={imagePreview || (user.pic.startsWith('http') ? user.pic : `http://localhost:5000${user.pic}`)}
                                 alt={user.name}
                                 className="w-24 h-24 rounded-full border-4 border-indigo-50 shadow-sm object-cover"
                             />
-                            <button className="absolute bottom-0 right-0 bg-indigo-600 text-white p-2 rounded-full hover:bg-indigo-700 transition-colors shadow-sm">
+                            <button
+                                onClick={() => fileInputRef.current?.click()}
+                                className="absolute bottom-0 right-0 bg-indigo-600 text-white p-2 rounded-full hover:bg-indigo-700 transition-colors shadow-sm"
+                            >
                                 <Camera size={16} />
                             </button>
                         </div>
@@ -78,7 +96,7 @@ const ProfileModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
                                 type="text"
                                 value={name}
                                 onChange={(e) => setName(e.target.value)}
-                                className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition-all"
+                                className="w-full px-4 py-2 rounded-lg border border-gray-200 text-gray-800 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition-all"
                             />
                         </div>
 
@@ -90,7 +108,7 @@ const ProfileModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
                                 type="text"
                                 value={about}
                                 onChange={(e) => setAbout(e.target.value)}
-                                className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition-all"
+                                className="w-full px-4 py-2 rounded-lg border border-gray-200 text-gray-800 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition-all"
                             />
                         </div>
                     </div>
